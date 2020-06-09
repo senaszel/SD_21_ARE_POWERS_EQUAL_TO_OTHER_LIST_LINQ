@@ -1,28 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Linq;
 
 namespace SD_21_ARE_POWERS_EQUAL_TO_OTHER_LIST_LINQ
 {
     public static class Extensions
     {
 
-        public static bool ArePowersEqualTo(
-            this IEnumerable<int> left, IEnumerable<int> right)
+        public static bool ArePowersEqualTo<T>(
+            this IEnumerable<T> left, IEnumerable<T> right)
         {
-            var leftIterator = left.GetEnumerator();
-            var rightIterator = right.GetEnumerator();
-
-            while (leftIterator.MoveNext() && rightIterator.MoveNext())
-            {
-                if (!Math.Pow(leftIterator.Current, 2).Equals(rightIterator.Current))
+            var lefter = left.Select(
+                x => Math.Pow(Convert.ToDouble(x), 2))
+                .AsParallel();
 
 
-                    return false;
-            }
+            var righter = Array.ConvertAll(
+                right.ToArray(), element => Convert.ToDouble(element))
+                .AsParallel();
 
 
-            return true;
+            return lefter.SequenceEqual(righter);
         }
+
     }
 }
